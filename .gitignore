@@ -1,0 +1,9 @@
+# Lines starting with '#' are considered comments.
+# Ignore any file named foo.txt.
+foo.txt
+# Ignore (generated) compiled files,
+*.pyc
+# Ignore objects and archives.
+*.[oa]
+# Ignore bash shell scripts
+*.sh
