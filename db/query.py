@@ -1,5 +1,5 @@
-from autumn.db import escape
-from autumn.db.connection import autumn_db
+from . import escape
+from .connection import autumn_db
 
 class Filter(object):
     '''

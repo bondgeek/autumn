@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import unittest
 import datetime
-from autumn.model import Model
-from autumn.tests.models import Book, Author
-from autumn.db.query import Query
-from autumn.db import escape
-from autumn import validators
+from ..model import Model
+from .models import Book, Author
+from ..db.query import Query
+from ..db import escape
+from .. import validators
 
 class TestModels(unittest.TestCase):
         

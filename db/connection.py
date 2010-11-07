@@ -10,6 +10,10 @@ class Database(object):
             import MySQLdb
             self.connection = MySQLdb.connect(**kwargs)
             self.placeholder = '%s'
+        elif dbtype == 'pyodbc':
+            import pyodbc
+            self.connection = pyodbc.connect(**kwargs)
+            self.placeholder = '?'
 
 class DBConn(object):
     def __init__(self):
