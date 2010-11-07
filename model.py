@@ -228,7 +228,8 @@ class Model(object):
         cursor = Query.raw_sql(query, values, self.db)
        
         if self._get_pk() is None:
-            self._set_pk(cursor.lastrowid)
+            lastrowid = self.db.conn.lastrowid()
+            self._set_pk(lastrowid)
         return True
         
     def _get_defaults(self):
