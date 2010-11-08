@@ -1,7 +1,7 @@
-from .db.query import Query
-from .db import escape
-from .db.connection import autumn_db, Database
-from .validators import ValidatorChain
+from autumn.db.query import Query
+from autumn.db import escape
+from autumn.db.connection import autumn_db, Database
+from autumn.validators import ValidatorChain
     
 class ModelCache(object):
     models = {}
@@ -228,8 +228,7 @@ class Model(object):
         cursor = Query.raw_sql(query, values, self.db)
        
         if self._get_pk() is None:
-            lastrowid = self.db.conn.lastrowid()
-            self._set_pk(lastrowid)
+            self._set_pk(cursor.lastrowid)
         return True
         
     def _get_defaults(self):

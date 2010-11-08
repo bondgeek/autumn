@@ -1,13 +1,11 @@
-from ..db.connection import autumn_db
-from ..model import Model
-from ..db.relations import ForeignKey, OneToMany
-from .. import validators
+from autumn.db.connection import autumn_db
+from autumn.model import Model
+from autumn.db.relations import ForeignKey, OneToMany
+from autumn import validators
 import datetime
 
 #autumn_db.conn.connect('sqlite3', '/tmp/example.db')
-#autumn_db.conn.connect('mysql', user='root', db='autumn_test')
-autumn_db.conn.connect('pyodbc', driver='{MySQL ODBC 5.1 Driver}', server='localhost', database='autumn_test', user='root')
-
+autumn_db.conn.connect('mysql', user='root', db='autumn')
     
 class Author(Model):
     books = OneToMany('Book')

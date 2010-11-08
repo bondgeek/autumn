@@ -4,10 +4,10 @@
 from threading import local as threading_local
 
 # Autumn ORM
-from .model import Model
-from .db.relations import ForeignKey, OneToMany
-from .db.query import Query
-from .db.connection import Database
+from autumn.model import Model
+from autumn.db.relations import ForeignKey, OneToMany
+from autumn.db.query import Query
+from autumn.db.connection import Database
 
 
 """
