@@ -1,11 +1,10 @@
-# Lines starting with '#' are considered comments.
-# Ignore any file named foo.txt.
+# Lines starting with '#' are considered comments--in fact, they are comments.
+# ignore foo.txt
 foo.txt
-# Ignore (generated) compiled files,
+# ignore compiled files
 *.pyc
-# Ignore objects and archives.
+# ignore objects and archives
 *.[oa]
-# Ignore bash shell scripts
-*.sh
-* Ignore Espesso project files
+# ignore project director for espresso editor
 *.esproj
+
