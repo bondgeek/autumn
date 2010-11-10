@@ -7,3 +7,5 @@ foo.txt
 *.[oa]
 # Ignore bash shell scripts
 *.sh
+* Ignore Espesso project files
+*.esproj
