@@ -1,0 +1,350 @@
+<!--
+Copyright (c) 2010 BG Research LLC
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  
+
+-->
+<document currentResultWorksheet="Search" verticalSplitterRatio="0.473394495413" horizontalSplitterRatio="0.75" splitterOrientation="Vertical" suspendRecalculations="True" license="MIT License" copyrightOwner="BG Research LLC" resolverVersion="1.9" resolverBuild="5108" documentVersion="13">
+    <foldState license="True" imports="True" worksheetCreation="True" preConstantsUserCode="False" constants="True" preFormulaeUserCode="False" generated="False" postFormulaeUserCode="False"/>
+    <traitDefaults>
+
+    </traitDefaults>
+    <preConstantsUserCode><![CDATA[import autumnIpy
+import autumnIpy.model
+import autumnIpy.relations
+import autumnIpy.dbconnection
+import autumnIpy.query
+
+from autumnIpy import Model, DBConnection, Query, Filter, OneToMany, ForeignKey
+
+from alprion import AlprionCfg_
+dbcfg = AlprionCfg_.read('database')
+
+cfg = {'UID': 'bondgeek', 'PWD': 'joeoutlaw', 'DATABASE': 'autumn_test'}
+
+autumnTestConn = DBConnection(**cfg)
+
+autumnTestConn.executeDBNonQuery("truncate books;") # must drop books first, due to foreign key
+autumnTestConn.executeDBNonQuery("truncate author;")
+autumnTestConn.executeDBNonQuery("truncate transaction;")
+print("truncated")
+
+class Author(Model):
+    dbcfg['DATABASE'] = 'autumn_test'
+    dbconn = DBConnection(**dbcfg)
+
+    books = OneToMany('Book')
+    
+class Book(Model):
+    dbcfg['DATABASE'] = 'autumn_test'
+    dbconn = DBConnection(**dbcfg)
+    
+    author = ForeignKey(Author)
+
+    class Meta:
+        table = 'books'
+
+class Transaction(Model):
+    dbcfg['DATABASE'] = 'autumn_test'
+    dbconn = DBConnection(**dbcfg)
+    
+        
+]]></preConstantsUserCode>
+    <preFormulaeUserCode><![CDATA[
+bolano = Author(1, "Roberto", "Bolano", "Chilean writer")
+bolano.save()
+print("bolano %s" % bolano.id)
+sd = Book(title = "The Savage Detectives", author_id=bolano.id)
+sd.save()
+
+long = Book(**{'title': '2666', 'author_id': bolano.id})
+long.merge()
+
+james = Author(last_name="Joyce", first_name="James")
+james.merge()
+print("james id: %s" % james.id )
+
+joyce = Author(first_name="James", last_name="Joyce", bio="weird")
+joyce.merge('last_name') # updates all records with the same last_name
+
+u = Book()
+u.title = "Ulysses"
+u.author_id = james.id
+u.save()
+
+print("transactions:")
+sale1 = Transaction(book_id=3, saledate="2666-01-01", saletime="12:00:00")
+sale1.save()
+
+]]></preFormulaeUserCode>
+    <names />
+    <viewStates>
+        <viewState worksheet="Books">
+            <currentCell col="1" row="1" />
+            <selection left="1" top="1" right="0" bottom="1" />
+            <scrollPos col="1" row="1" />
+            <virtualGridSize width="10" height="40" />
+        </viewState>
+        <viewState worksheet="Search">
+            <currentCell col="3" row="2" />
+            <scrollPos col="2" row="1" />
+            <virtualGridSize width="11" height="41" />
+        </viewState>
+        <viewState worksheet="Authors">
+            <currentCell col="1" row="16" />
+            <scrollPos col="1" row="1" />
+            <virtualGridSize width="11" height="43" />
+        </viewState>
+    </viewStates>
+    <worksheetOrder>
+        <orderentry name="Search" />
+        <orderentry name="Authors" />
+        <orderentry name="Books" />
+    </worksheetOrder>
+    <worksheet name="Authors" value="" showGrid="True" showBounds="False" headerWidth="-1" headerHeight="-1">
+        <trait name="FontSize">
+        </trait>
+        <trait name="BorderBottom">
+        </trait>
+        <trait name="ShowNegativeSymbol">
+        </trait>
+        <trait name="Unit">
+        </trait>
+        <trait name="ColWidth">
+            <traitentry col="4" row="0" value="92" />
+        </trait>
+        <trait name="Alignment">
+        </trait>
+        <trait name="BorderTop">
+        </trait>
+        <trait name="WebEditable">
+        </trait>
+        <trait name="Italic">
+        </trait>
+        <trait name="FontFamily">
+        </trait>
+        <trait name="ShowSeparators">
+        </trait>
+        <trait name="VerticalAlignment">
+        </trait>
+        <trait name="Formatter">
+        </trait>
+        <trait name="Underline">
+        </trait>
+        <trait name="Color">
+        </trait>
+        <trait name="RowHidden">
+        </trait>
+        <trait name="BorderLeft">
+        </trait>
+        <trait name="StripZeros">
+        </trait>
+        <trait name="ColHidden">
+        </trait>
+        <trait name="Wrap">
+        </trait>
+        <trait name="NegativeTextColor">
+        </trait>
+        <trait name="BorderRight">
+        </trait>
+        <trait name="RowHeight">
+        </trait>
+        <trait name="BackColor">
+        </trait>
+        <trait name="Bold">
+        </trait>
+        <trait name="Strikethrough">
+        </trait>
+        <trait name="ImagePlacement">
+        </trait>
+        <trait name="DecimalPlaces">
+        </trait>
+    </worksheet>
+    <worksheet name="Books" value="" showGrid="True" showBounds="False" headerWidth="-1" headerHeight="-1">
+        <trait name="FontSize">
+        </trait>
+        <trait name="BorderBottom">
+        </trait>
+        <trait name="ShowNegativeSymbol">
+        </trait>
+        <trait name="Unit">
+        </trait>
+        <trait name="ColWidth">
+            <traitentry col="2" row="0" value="131" />
+        </trait>
+        <trait name="Alignment">
+        </trait>
+        <trait name="BorderTop">
+        </trait>
+        <trait name="WebEditable">
+        </trait>
+        <trait name="Italic">
+        </trait>
+        <trait name="FontFamily">
+        </trait>
+        <trait name="ShowSeparators">
+        </trait>
+        <trait name="VerticalAlignment">
+            <traitentry col="0" row="1" value="Bottom" />
+        </trait>
+        <trait name="Formatter">
+        </trait>
+        <trait name="Underline">
+        </trait>
+        <trait name="Color">
+        </trait>
+        <trait name="RowHidden">
+        </trait>
+        <trait name="BorderLeft">
+        </trait>
+        <trait name="StripZeros">
+        </trait>
+        <trait name="ColHidden">
+        </trait>
+        <trait name="Wrap">
+        </trait>
+        <trait name="NegativeTextColor">
+        </trait>
+        <trait name="BorderRight">
+        </trait>
+        <trait name="RowHeight">
+            <traitentry col="0" row="1" value="66" />
+        </trait>
+        <trait name="BackColor">
+        </trait>
+        <trait name="Bold">
+            <traitentry col="4" row="1" value="True" />
+        </trait>
+        <trait name="Strikethrough">
+        </trait>
+        <trait name="ImagePlacement">
+        </trait>
+        <trait name="DecimalPlaces">
+        </trait>
+        <cell name="D1" value="Author" type="general">
+        </cell>
+    </worksheet>
+    <worksheet name="Search" value="" showGrid="True" showBounds="False" headerWidth="-1" headerHeight="-1">
+        <trait name="FontSize">
+        </trait>
+        <trait name="BorderBottom">
+        </trait>
+        <trait name="ShowNegativeSymbol">
+        </trait>
+        <trait name="Unit">
+        </trait>
+        <trait name="ColWidth">
+            <traitentry col="1" row="0" value="157" />
+            <traitentry col="3" row="0" value="138" />
+        </trait>
+        <trait name="Alignment">
+            <traitentry col="1" row="1" value="Right" />
+        </trait>
+        <trait name="BorderTop">
+        </trait>
+        <trait name="WebEditable">
+        </trait>
+        <trait name="Italic">
+        </trait>
+        <trait name="FontFamily">
+        </trait>
+        <trait name="ShowSeparators">
+        </trait>
+        <trait name="VerticalAlignment">
+            <traitentry col="1" row="1" value="Bottom" />
+            <traitentry col="2" row="1" value="Bottom" />
+            <traitentry col="3" row="1" value="Bottom" />
+        </trait>
+        <trait name="Formatter">
+        </trait>
+        <trait name="Underline">
+        </trait>
+        <trait name="Color">
+        </trait>
+        <trait name="RowHidden">
+        </trait>
+        <trait name="BorderLeft">
+        </trait>
+        <trait name="StripZeros">
+        </trait>
+        <trait name="ColHidden">
+        </trait>
+        <trait name="Wrap">
+        </trait>
+        <trait name="NegativeTextColor">
+        </trait>
+        <trait name="BorderRight">
+        </trait>
+        <trait name="RowHeight">
+            <traitentry col="0" row="1" value="48" />
+        </trait>
+        <trait name="BackColor">
+            <traitentry col="2" row="1" value="ARGB color: 255, 255, 255, 128" />
+        </trait>
+        <trait name="Bold">
+            <traitentry col="1" row="1" value="True" />
+            <traitentry col="3" row="1" value="True" />
+        </trait>
+        <trait name="Strikethrough">
+        </trait>
+        <trait name="ImagePlacement">
+        </trait>
+        <trait name="DecimalPlaces">
+        </trait>
+        <cell name="A1" value="AuthorId &gt;&gt;" type="general">
+        </cell>
+        <cell name="B1" value="2" type="general">
+        </cell>
+        <cell name="C1" value="Books" type="general">
+        </cell>
+    </worksheet>
+    <postFormulaeUserCode><![CDATA[
+author_sh = workbook['Authors']
+book_sh = workbook['Books']
+search_sh = workbook['Search']
+
+author_qry = Query(model=Author)
+for n, f in enumerate(Author().fields):
+    author_sh.Rows[1][n+1] = f
+
+rowNum = 2
+for rowq in author_qry:
+    for n, f in enumerate(rowq.fields):
+        author_sh.Rows[rowNum][n+1] = getattr(rowq, f)
+    rowNum += 1
+
+book_qry = Query(model=Book)
+for n, f in enumerate(Book().fields):
+    book_sh.Rows[1][n+1] = f
+
+rowNum = 2
+for rowq in book_qry:
+    for n, f in enumerate(rowq.fields):
+        book_sh.Rows[rowNum][n+1] = getattr(rowq, f)
+    book_sh.Rows[rowNum][n+2] = rowq.author.last_name # from foreign key
+    rowNum += 1
+
+AuthorId = search_sh.B1  # get user input
+AuthorBooks = Author().get(AuthorId).books  # uses OneToMany join
+for n, book in enumerate(AuthorBooks):
+    search_sh.Rows[n+2][3] = book.title
+
+]]></postFormulaeUserCode>
+</document>
