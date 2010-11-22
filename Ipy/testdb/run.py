@@ -1,5 +1,5 @@
 
-from autumnIpy.testdb.models import Author, Book, Transaction, autumnTestConn
+from autumn.Ipy.testdb.models import Author, Book, Transaction, autumnTestConn
 
 import unittest
 import datetime

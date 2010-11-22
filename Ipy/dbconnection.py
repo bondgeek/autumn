@@ -31,9 +31,7 @@ class DBConnection(object):
     def __init__(self, **kwargs):
         defaultKeys = {'UID': None,
                        'PWD': None,
-                       'DATABASE': None,
-                       'DRIVER': "{MySQL ODBC 5.1 Driver}", 
-                       'SERVER': "localhost"}
+                       'DSN': None}
         defaultErrorString = "DBConnection:  Value for %s must be provided"
         
         # if parameters are provided, use them,

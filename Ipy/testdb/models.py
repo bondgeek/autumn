@@ -1,9 +1,9 @@
-from autumnIpy import Model, DBConnection, Query, Filter, OneToMany, ForeignKey
+from autumn.Ipy import Model, DBConnection, Query, Filter, OneToMany, ForeignKey
 
 from alprion import AlprionCfg_
 
 cfg = AlprionCfg_.read('database', ("UID", "PWD"))
-cfg['DATABASE'] = 'autumn_test'
+cfg['DSN'] = 'AutumnTest'
 
 autumnTestConn = DBConnection(**cfg)
 
