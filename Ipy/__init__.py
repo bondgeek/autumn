@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 from model import Model, DBConnection, Query
-from filter import Filter
 from relations import OneToMany, ForeignKey, JoinBy
-from validators import *
 
+from autumn.validators import *
+from autumn.db.filter import Filter

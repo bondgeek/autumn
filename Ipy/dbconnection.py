@@ -74,8 +74,7 @@ class DBConnection(object):
         if CloseIt:
             self.connection.Close()
         return rc
-    
-                        
+                            
     def executeDBQuery(self, sql, rowsAsDict=None):
         '''
         Executes a query against the database, return the results in a list,

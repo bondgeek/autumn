@@ -9,8 +9,9 @@ from autumn.Ipy.dbconnection import DBConnection, escape, unescape, sqlPlacehold
 from autumn.Ipy.dbconnection import OdbcConnection, OdbcDataAdapter, OdbcCommand
 from autumn.Ipy.dbconnection import DataSet, ConnectionState
 
-from autumn.Ipy.validators import ValidatorChain
 from autumn.Ipy.query import Query
+
+from autumn.validators import ValidatorChain
 
 class ModelCache(object):
     models = {}

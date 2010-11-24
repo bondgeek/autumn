@@ -50,7 +50,6 @@ class JoinBy(Relation):
         for k in kwargs:
             self.otherconditions.update({k: kwargs[k]})
             
-        
     def __get__(self, instance, owner):
         super(JoinBy, self)._set_up(instance, owner)
         if not instance:

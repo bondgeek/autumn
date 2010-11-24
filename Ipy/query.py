@@ -3,7 +3,7 @@ Query class(es) for sql
 
 '''
 
-from autumn.Ipy.filter import Filter
+from autumn.db.filter import Filter
 from autumn.Ipy.dbconnection import escape, unescape, sqlPlaceholder
 
 class Query(object):
