@@ -7,4 +7,6 @@ foo.txt
 *.[oa]
 # ignore project director for espresso editor
 *.esproj
-
+# ignore project files for pydev and eclipse
+*.project
+*.pydevproject
