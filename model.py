@@ -282,7 +282,6 @@ class Model(object):
 
         return Query(model=cls, conditions=kwargs)
         
-        
     class ValidationError(Exception):
         pass
     

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import unittest
 import datetime
+
 from autumn.model import Model
-from autumn.models import Book, Author
+from autumn.tests.models import Book, Author
 from autumn.db.query import Query
 from autumn.db import escape
 from autumn import validators
