@@ -11,7 +11,7 @@ version_string = "Autumn ORM version %d.%d.%d (with bondgeek modifications)" % v
 import sys
 
 if sys.platform == 'cli':
-    from autumn.Ipy import Model, DBConnection, Query, Filter, OneToMany, ForeignKey
+    from autumn.Ipy import Model, DBConnection, Query, Filter, OneToMany, ForeignKey, escape
     
 else:
     from model import Model
@@ -19,3 +19,4 @@ else:
     from db.query import Query
     from db.filter import Filter
     from db.relations import OneToMany, ForeignKey
+    from db import escape

@@ -17,7 +17,7 @@
    
 '''
 
-from connection import Database, DBConn
+from connection import Database, DBConn, autumn_db
 
 class DBConnector(Database):
     
@@ -48,7 +48,12 @@ class DBConnector(Database):
 
 class DBConnection(DBConn):
     def __init__(self, dbtype=None, db=None, dbfile=None, **kwcfg):
+        global autumn_db
+        
         DBConn.__init__(self, DBConnector())
         
         self.conn.getconnection(dbtype, db, dbfile, **kwcfg)
+        
+        autumn_db = self
+        
         

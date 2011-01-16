@@ -1,6 +1,4 @@
-from ..db.dbconnection import DBConnection
-from ..model import Model
-from ..db.relations import ForeignKey, OneToMany
+from .. import DBConnection, Model, ForeignKey, OneToMany
 from .. import validators
 
 import datetime
@@ -10,7 +8,7 @@ import datetime
 #autumn_db.conn.connect('pyodbc', driver='{MySQL ODBC 5.1 Driver}', server='localhost', database='autumn_test', user='root')
 
 class TESTDB(object):
-    db = DBConnection(DSN='AutumnTest', UID='bondgeek')
+    db = DBConnection('pyodbc', DSN='AutumnTest', UID='bondgeek')
         
 class Author(TESTDB, Model):
     books = OneToMany('Book')

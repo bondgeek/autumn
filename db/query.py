@@ -73,7 +73,7 @@ class Query(object):
     '''
     
     def __init__(self, query_type='SELECT *', conditions=None, model=None, db=None):
-        from autumn.model import Model
+        from .. import Model
         self.type = query_type
         # using conditions = {} in argument line causes each 
         # instance of Query to share 'conditions'.

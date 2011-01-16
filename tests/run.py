@@ -1,16 +1,22 @@
-#!/usr/bin/env python
+'''
+To run:
+> import autumn.tests.run as runtest
+> runtest.main()
+
+
+'''
+
 import unittest
 import datetime
 
-from autumn.model import Model
-from autumn.tests.models import Book, Author
-from autumn.db.query import Query
-from autumn.db import escape
-from autumn import validators
+from .. import Model, Query, escape
+from .. import validators
+
+from .models import Book, Author, TESTDB
 
 class TestModels(unittest.TestCase):
         
-    def testmodel(self):
+    def test_model(self):
         # Create tables
         
         ### MYSQL ###
@@ -50,7 +56,7 @@ class TestModels(unittest.TestCase):
         # );
         
         for table in ('author', 'books'):
-            Query.raw_sql('DELETE FROM %s' % escape(table))
+            Query.raw_sql('DELETE FROM %s' % escape(table), db=TESTDB.db)
         
         # Test Creation
         james = Author(first_name='James', last_name='Joyce')
@@ -123,7 +129,7 @@ class TestModels(unittest.TestCase):
         except Model.ValidationError:
             pass
             
-    def testvalidators(self):
+    def test_validators(self):
         ev = validators.Email()
         assert ev('test@example.com')
         assert not ev('adsf@.asdf.asdf')
@@ -143,5 +149,7 @@ class TestModels(unittest.TestCase):
         assert not vc('a@a.com')
         assert not vc('asdfasdfasdfasdfasdf')
         
-if __name__ == '__main__':
-    unittest.main()
+def main():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestModels)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    

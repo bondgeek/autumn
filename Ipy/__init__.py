@@ -37,3 +37,5 @@ from relations import OneToMany, ForeignKey, JoinBy
 
 from autumn.validators import *
 from autumn.db.filter import Filter
+
+from dbconnection import escape
