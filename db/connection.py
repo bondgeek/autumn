@@ -29,10 +29,10 @@ class Database(object):
         return rc[0] if rc else None
     
 class DBConn(object):
-    def __init__(self):
+    def __init__(self, connector=None):
         self.b_debug = False
         self.b_commit = True
-        self.conn = None
+        self.conn = connector
 
 autumn_db = DBConn()
 autumn_db.conn = Database()
