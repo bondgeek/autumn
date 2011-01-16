@@ -1,5 +1,6 @@
 '''
 Database and connection string configurations
+
 '''
 try:
     from System.Data.Odbc import OdbcConnection, OdbcDataAdapter, OdbcCommand
