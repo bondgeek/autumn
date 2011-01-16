@@ -15,6 +15,7 @@ if sys.platform == 'cli':
     
 else:
     from model import Model
+    from db.connection import autumn_db
     from db.dbconnection import DBConnection
     from db.query import Query
     from db.filter import Filter

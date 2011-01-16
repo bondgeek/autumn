@@ -1,6 +1,6 @@
 from .db.query import Query
 from .db import escape
-from .db.connection import autumn_db, Database
+from .db.connection import autumn_db
 from .validators import ValidatorChain
     
 class ModelCache(object):
@@ -52,6 +52,7 @@ class ModelBase(type):
         # http://www.python.org/dev/peps/pep-0249/
         if not hasattr(new_class, "db"):
             new_class.db = autumn_db
+            
         db = new_class.db
         q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db=new_class.db)
         new_class._fields = [f[0] for f in q.description]

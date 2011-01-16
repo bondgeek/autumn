@@ -74,6 +74,16 @@ class Query(object):
     
     def __init__(self, query_type='SELECT *', conditions=None, model=None, db=None):
         from .. import Model
+        
+        if not issubclass(model, Model):
+            raise Exception('Query objects must be created with a model class.')
+            
+        self.model = model
+        if db:
+            self.db = db
+        elif model:
+            self.db = model.db
+            
         self.type = query_type
         # using conditions = {} in argument line causes each 
         # instance of Query to share 'conditions'.
@@ -83,16 +93,10 @@ class Query(object):
             self.conditions = {}
         else:
             self.conditions = conditions
+            
         self.order = ''
         self.limit = ()
         self.cache = None
-        if not issubclass(model, Model):
-            raise Exception('Query objects must be created with a model class.')
-        self.model = model
-        if db:
-            self.db = db
-        elif model:
-            self.db = model.db
         
     def __getitem__(self, k):
         if self.cache != None:

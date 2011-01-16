@@ -12,7 +12,7 @@ import datetime
 from .. import Model, Query, escape
 from .. import validators
 
-from .models import Book, Author, TESTDB
+from .models import Book, Author
 
 class TestModels(unittest.TestCase):
         
@@ -56,7 +56,7 @@ class TestModels(unittest.TestCase):
         # );
         
         for table in ('author', 'books'):
-            Query.raw_sql('DELETE FROM %s' % escape(table), db=TESTDB.db)
+            Query.raw_sql('DELETE FROM %s' % escape(table))
         
         # Test Creation
         james = Author(first_name='James', last_name='Joyce')

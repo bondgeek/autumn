@@ -1,19 +1,29 @@
 '''
-  Connection class
+Connection class
  
-  To be invoked from a dbconnection class that contains db=DBConn()
-  This class keeps track of what kind of connection you have (sqlite,mysql)
+  This class keeps track of what kind of connection you have (sqlite,mysql, pyodbc)
   and has a 'close()' method that is easily accessible.
   
-  
-    class marketsdb(object):
-        db.conn = DBConnection('mysql', db='mydatabase', **mycfg) 
-        close = db.conn.close
+*dbtype* 
+    Values 'sqlite3', 'mysql', 'pyodbc'.  'mysql' uses the MySQLdb package to connect.  
+    'pyodbc' supports the use of connection strings and
+    provides more cross platform interoperability.         
 
+Example
+    
+    mycfg = {'DSN': myODBC_DSN, 'UID': myUID, 'PWD': myPWD}
+
+    class marketsdb(object):
+        db = DBConnection('pyodbc', db='mydatabase', **mycfg) 
+        
     class Table(marketsdb, Model):
         "This is now an autumnORM object representing mydatabase.Table" 
         pass
 
+N.B.:  If you use this to create a connection, any Query.raw_sql call MUST specify
+the db connection.  Using the above example:
+    
+    Query.raw_sql("select * from mytable", db=marketsdb.db)
    
 '''
 
@@ -39,7 +49,7 @@ class DBConnector(Database):
             self.user = None
         
         if db:
-            kwcfg.update({'db': db})
+            kwcfg.update({'DATABASE': db})
         
         self.connect(dbtype, dbfile, **kwcfg) 
 
