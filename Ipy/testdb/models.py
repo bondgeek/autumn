@@ -7,7 +7,8 @@ cfg['DSN'] = 'AutumnTest'
 
 autumnTestConn = DBConnection(**cfg)
 
-autumnTestConn.executeDBNonQuery("truncate books;") # must drop books first, due to foreign key
+# must drop books first, due to foreign key
+autumnTestConn.executeDBNonQuery("truncate books;") 
 autumnTestConn.executeDBNonQuery("truncate author;")
 autumnTestConn.executeDBNonQuery("truncate transaction;")
 print("truncated")

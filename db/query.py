@@ -156,8 +156,13 @@ class Query(object):
         if field:
             kwargs.update({field: direction})
 
-        joinstr = ' ORDER BY'
+        if hasattr(self, 'order_kwargs'):
+            self.order_kwargs.update(kwargs)
+        else:
+            self.order_kwargs = kwargs
             
+        joinstr = ' ORDER BY'
+        self.order = ' '    
         for field in kwargs:
             direction = kwargs[field].upper()
             field = escape(field)
