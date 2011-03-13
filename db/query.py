@@ -142,7 +142,7 @@ class Query(object):
     def filter(self, **kwargs):
         #  get_data() needs to know if query has been executed since 
         #  conditions was last updated--
-        #  so I'm changing filter is set self.cache to None
+        #  so I'm changing filter to set self.cache to None
         self.conditions.update(kwargs)
         self.cache = None
         return self
@@ -170,6 +170,8 @@ class Query(object):
                                        " %s %s" % (field, direction)])
             joinstr = ","
         
+        # need to set cache to None to force query rerun.
+        self.cache = None
         return self
 
     def mult_order_by(self, **kwargs):
