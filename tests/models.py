@@ -18,7 +18,7 @@ class Author(Model):
                        'last_name': (validators.Length(), lambda x: x != 'BadGuy!')}
     
 class Book(Model):
-    author = ForeignKey(Author)
+    author = ForeignKey('Author')
     
     class Meta:
         table = 'books'
