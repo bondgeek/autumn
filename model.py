@@ -54,7 +54,7 @@ class ModelBase(type):
             new_class.db = autumn_db
 
         db = new_class.db
-        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db = new_class.db)
+        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db=new_class.db)
         new_class._fields = [f[0] for f in q.description]
 
         if getattr(new_class.Meta, 'inner_join', None):
@@ -71,7 +71,7 @@ class ModelBase(type):
                                              table_key))
 
             q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % table_safe,
-                              db = new_class.db)
+                              db=new_class.db)
 
             new_class.t1 = (table, [f[0] for f in q.description])
             table_fields = lambda f: "_".join((table_key, f)) \
@@ -280,12 +280,12 @@ class Model(object):
             return self._update()
 
     @classmethod
-    def get(cls, _obj_pk = None, **kwargs):
+    def get(cls, _obj_pk=None, **kwargs):
         'Returns Query object'
         if _obj_pk is not None:
             return cls.get(**{cls.Meta.pk: _obj_pk})[0]
 
-        return Query(model = cls, conditions = kwargs)
+        return Query(model=cls, conditions=kwargs)
 
     class ValidationError(Exception):
         pass

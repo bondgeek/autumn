@@ -4,7 +4,7 @@ class Validator(object):
     pass
 
 class Regex(Validator):
-    def __init__(self, pattern, flags = 0):
+    def __init__(self, pattern, flags=0):
     	self.regex = re.compile(pattern, flags)
     def __call__(self, value):
         return bool(self.regex.match(value))
@@ -14,7 +14,7 @@ class Email(Regex):
 			super(Email, self).__init__(r'^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)$', re.I)
 
 class Length(Validator):
-    def __init__(self, min_length = 1, max_length = None):
+    def __init__(self, min_length=1, max_length=None):
         if max_length is not None:
             assert max_length >= min_length, "max_length must be greater than or equal to min_length"
         self.min_length = min_length
@@ -26,7 +26,7 @@ class Length(Validator):
                (self.max_length is None or l <= self.max_length)
 
 class Number(Validator):
-    def __init__(self, minimum = None, maximum = None):
+    def __init__(self, minimum=None, maximum=None):
         if None not in (minimum, maximum):
             assert maximum >= minimum, "maximum must be greater than or equal to minimum"
         self.minimum = minimum
