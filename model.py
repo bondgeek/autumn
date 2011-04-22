@@ -2,18 +2,18 @@ from .db.query import Query
 from .db import escape
 from .db.connection import autumn_db
 from .validators import ValidatorChain
-    
+
 class ModelCache(object):
     models = {}
-    
+
     def add(self, model):
         self.models[model.__name__] = model
-        
+
     def get(self, model_name):
         return self.models[model_name]
-   
+
 cache = ModelCache()
-    
+
 class Empty:
     pass
 
@@ -29,65 +29,65 @@ class ModelBase(type):
     def __new__(cls, name, bases, attrs):
         if name == 'Model' or name == 'View':
             return super(ModelBase, cls).__new__(cls, name, bases, attrs)
-            
+
         new_class = type.__new__(cls, name, bases, attrs)
-        
+
         if not getattr(new_class, 'Meta', None):
             new_class.Meta = Empty
-        
+
         if not getattr(new_class.Meta, 'table', None):
             new_class.Meta.table = name.lower()
         new_class.Meta.table_safe = escape(new_class.Meta.table)
-    
+
         # Assume id is the default 
         if not getattr(new_class.Meta, 'pk', None):
             new_class.Meta.pk = 'id'
-        
+
         # Create function to loop over iterable validations
         for k, v in getattr(new_class.Meta, 'validations', {}).iteritems():
             if isinstance(v, (list, tuple)):
                 new_class.Meta.validations[k] = ValidatorChain(*v)
-        
+
         # See cursor.description
         # http://www.python.org/dev/peps/pep-0249/
         if not hasattr(new_class, "db"):
             new_class.db = autumn_db
-            
+
         db = new_class.db
-        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db=new_class.db)
+        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db = new_class.db)
         new_class._fields = [f[0] for f in q.description]
-        
+
         if getattr(new_class.Meta, 'inner_join', None):
             #Allows simple, two table joins on a single key
             table_key = "t0"
-            new_class.Meta.table_safe = " AS ".join((escape(new_class.Meta.table), 
+            new_class.Meta.table_safe = " AS ".join((escape(new_class.Meta.table),
                                                      table_key))
             new_class.t0 = (new_class.Meta.table, [f[0] for f in q.description])
-            
+
             table, field, target = new_class.Meta.inner_join
-            
+
             table_key = "t1"
-            table_safe = " AS ".join((escape(table), 
+            table_safe = " AS ".join((escape(table),
                                              table_key))
-            
-            q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % table_safe, 
-                              db=new_class.db)
-            
+
+            q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % table_safe,
+                              db = new_class.db)
+
             new_class.t1 = (table, [f[0] for f in q.description])
             table_fields = lambda f: "_".join((table_key, f)) \
                                     if f in new_class._fields else f
             new_class._fields.extend([table_fields(f) for f in new_class.t1[1]])
-            
-            
-            new_class.Meta.table_safe = " INNER JOIN ".join((new_class.Meta.table_safe, 
+
+
+            new_class.Meta.table_safe = " INNER JOIN ".join((new_class.Meta.table_safe,
                                                              table_safe))
-            
+
             join_on = "=".join((".".join(("t0", field)),
                                 ".".join((table_key, target))))
-            
+
             new_class.Meta.table_safe = " ON ".join((new_class.Meta.table_safe,
                                                      join_on))
-              
+
         cache.add(new_class)
         return new_class
 
@@ -174,7 +174,7 @@ class Model(object):
         
     '''
     __metaclass__ = ModelBase
-    
+
     debug = False
 
     def __init__(self, *args, **kwargs):
@@ -184,13 +184,13 @@ class Model(object):
         [setattr(self, self._fields[i], arg) for i, arg in enumerate(args)]
         [setattr(self, k, v) for k, v in kwargs.iteritems()]
         self._changed = set()
-        
+
     def __setattr__(self, name, value):
         'Records when fields have changed'
         if name != '_changed' and name in self._fields and hasattr(self, '_changed'):
             self._changed.add(name)
         self.__dict__[name] = value
-        
+
     def _get_pk(self):
         'Sets the current value of the primary key'
         return getattr(self, self.Meta.pk, None)
@@ -198,41 +198,45 @@ class Model(object):
     def _set_pk(self, value):
         'Sets the primary key'
         return setattr(self, self.Meta.pk, value)
-        
+
     def _update(self):
         'Uses SQL UPDATE to update record'
+        if not len(self._changed):
+        	return False
+
         query = 'UPDATE %s SET ' % self.Meta.table_safe
         query += ', '.join(['%s = %s' % (escape(f), self.db.conn.placeholder) for f in self._changed])
         query += ' WHERE %s = %s ' % (escape(self.Meta.pk), self.db.conn.placeholder)
-        
+
         values = [getattr(self, f) for f in self._changed]
         values.append(self._get_pk())
-        
+
         cursor = Query.raw_sql(query, values, self.db)
-        
+        return True
+
     def _new_save(self):
         'Uses SQL INSERT to create new record'
         # if pk field is set, we want to insert it too
         # if pk field is None, we want to auto-create it from lastrowid
         auto_pk = 1 and (self._get_pk() is None) or 0
-        fields=[
-            escape(f) for f in self._fields 
+        fields = [
+            escape(f) for f in self._fields
             if f != self.Meta.pk or not auto_pk
         ]
         query = 'INSERT INTO %s (%s) VALUES (%s)' % (
                self.Meta.table_safe,
                ', '.join(fields),
-               ', '.join([self.db.conn.placeholder] * len(fields) )
+               ', '.join([self.db.conn.placeholder] * len(fields))
         )
         values = [getattr(self, f, None) for f in self._fields
                if f != self.Meta.pk or not auto_pk]
         cursor = Query.raw_sql(query, values, self.db)
-       
+
         if self._get_pk() is None:
             lastrowid = self.db.conn.lastrowid()
             self._set_pk(lastrowid)
         return True
-        
+
     def _get_defaults(self):
         'Sets attribute defaults based on ``defaults`` dict'
         for k, v in getattr(self.Meta, 'defaults', {}).iteritems():
@@ -240,14 +244,14 @@ class Model(object):
                 if callable(v):
                     v = v()
                 setattr(self, k, v)
-        
+
     def delete(self):
         'Deletes record from database'
         query = 'DELETE FROM %s WHERE %s = %s' % (self.Meta.table_safe, self.Meta.pk, self.db.conn.placeholder)
         values = [getattr(self, self.Meta.pk)]
         Query.raw_sql(query, values, self.db)
         return True
-        
+
     def is_valid(self):
         'Returns boolean on whether all ``validations`` pass'
         try:
@@ -255,7 +259,7 @@ class Model(object):
             return True
         except Model.ValidationError:
             return False
-    
+
     def _validate(self):
         'Tests all ``validations``, raises ``Model.ValidationError``'
         for k, v in getattr(self.Meta, 'validations', {}).iteritems():
@@ -263,7 +267,7 @@ class Model(object):
             value = getattr(self, k)
             if not v(value):
                 raise Model.ValidationError, 'Improper value "%s" for "%s"' % (value, k)
-        
+
     def save(self):
         'Sets defaults, validates and inserts into or updates database'
         self._get_defaults()
@@ -274,24 +278,24 @@ class Model(object):
             return True
         else:
             return self._update()
-            
+
     @classmethod
-    def get(cls, _obj_pk=None, **kwargs):
+    def get(cls, _obj_pk = None, **kwargs):
         'Returns Query object'
         if _obj_pk is not None:
             return cls.get(**{cls.Meta.pk: _obj_pk})[0]
 
-        return Query(model=cls, conditions=kwargs)
-        
+        return Query(model = cls, conditions = kwargs)
+
     class ValidationError(Exception):
         pass
-    
+
 
 class View(Model):
     '''read only class.  should be used for joins'''
-    
+
     __metaclass__ = ModelBase
-    
+
     def __init__(self, *args, **kwargs):
         'Allows setting of fields using kwargs'
         Model.__init__(self, *args, **kwargs)
