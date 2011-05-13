@@ -1,11 +1,11 @@
-        
+
 class Database(object):
     placeholder = '?'
-    
+
     def connect(self, dbtype, *args, **kwargs):
         if dbtype == 'sqlite3':
             import sqlite3
-            self.connection = sqlite3.connect(*args)
+            self.connection = sqlite3.connect(*args, **kwargs)
             self.lastrowid_ = "LAST_INSERT_ROWID()"
         elif dbtype == 'mysql':
             import MySQLdb
@@ -18,16 +18,16 @@ class Database(object):
             self.connection.autocommit = True
             self.lastrowid_ = "LAST_INSERT_ID()"
             self.placeholder = '?'
-    
+
     def lastrowid(self):
         idCursor = self.connection.cursor()
         qry = "SELECT %s AS last_row_id" % self.lastrowid_
         idCursor.execute(qry)
-        
+
         rc = idCursor.fetchone()
-        
+
         return rc[0] if rc else None
-    
+
 class DBConn(object):
     def __init__(self, connector=None):
         self.b_debug = False
