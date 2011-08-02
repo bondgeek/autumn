@@ -4,6 +4,8 @@ Connection class
   This class keeps track of what kind of connection you have (sqlite,mysql, pyodbc)
   and has a 'close()' method that is easily accessible.
   
+  Using this class helps deal with multiple database connections.
+  
 *dbtype* 
     Values 'sqlite3', 'mysql', 'pyodbc'.  'mysql' uses the MySQLdb package to connect.  
     'pyodbc' supports the use of connection strings and
@@ -42,14 +44,15 @@ class DBConnector(Database):
                 dbfile = os.path.join(dbfile,db)
             else:
                 pass # because dbfile better be a good file name
-        self.dbname = db
-        if 'user' in kwcfg:
-            self.user = kwcfg['user']
         else:
-            self.user = None
-        
-        if db:
-            kwcfg.update({'DATABASE': db})
+            self.dbname = db
+            if 'user' in kwcfg:
+                self.user = kwcfg['user']
+            else:
+                self.user = None
+            
+            if db:
+                kwcfg.update({'DATABASE': db})
         
         self.connect(dbtype, dbfile, **kwcfg) 
 
