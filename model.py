@@ -38,7 +38,7 @@ class ModelBase(type):
         if not getattr(new_class.Meta, 'table', None):
             new_class.Meta.table = name.lower()
         new_class.Meta.table_safe = escape(new_class.Meta.table)
-
+        
         # Assume id is the default 
         if not getattr(new_class.Meta, 'pk', None):
             new_class.Meta.pk = 'id'
@@ -54,7 +54,9 @@ class ModelBase(type):
             new_class.db = autumn_db
 
         db = new_class.db
-        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, db=new_class.db)
+        q = Query.raw_sql('SELECT * FROM %s LIMIT 1' % new_class.Meta.table_safe, 
+                          db=new_class.db)
+                          
         new_class._fields = [f[0] for f in q.description]
 
         if getattr(new_class.Meta, 'inner_join', None):

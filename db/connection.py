@@ -7,11 +7,13 @@ class Database(object):
             import sqlite3
             self.connection = sqlite3.connect(*args, **kwargs)
             self.lastrowid_ = "LAST_INSERT_ROWID()"
+            
         elif dbtype == 'mysql':
             import MySQLdb
             self.connection = MySQLdb.connect(**kwargs)
             self.lastrowid_ = "LAST_INSERT_ID()"
             self.placeholder = '%s'
+            
         elif dbtype == 'pyodbc':
             import pyodbc
             self.connection = pyodbc.connect(**kwargs)
