@@ -289,6 +289,10 @@ class Model(object):
 
         return Query(model=cls, conditions=kwargs)
 
+    @property
+    def fields(self):
+        return self._fields
+        
     class ValidationError(Exception):
         pass
 
