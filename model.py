@@ -288,7 +288,11 @@ class Model(object):
             return cls.get(**{cls.Meta.pk: _obj_pk})[0]
 
         return Query(model=cls, conditions=kwargs)
-
+        
+    @classmethod
+    def query(cls, sql_text, values=()):
+        return Query.raw_sql(sql_txt, values, cls.db)
+    
     @property
     def fields(self):
         return self._fields
