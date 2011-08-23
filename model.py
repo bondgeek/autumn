@@ -291,7 +291,7 @@ class Model(object):
         
     @classmethod
     def query(cls, sql_text, values=()):
-        return Query.raw_sql(sql_txt, values, cls.db)
+        return Query.raw_sql(sql_text, values, cls.db)
     
     @property
     def fields(self):
