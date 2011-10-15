@@ -28,8 +28,11 @@ the db connection.  Using the above example:
     Query.raw_sql("select * from mytable", db=marketsdb.db)
    
 '''
+import os
+from threading import local as threading_local
 
 from connection import Database, DBConn, autumn_db
+from autumn.util import AutoConn
 
 class DBConnector(Database):
     
@@ -37,13 +40,13 @@ class DBConnector(Database):
         '''return a Database object connected to the database'''
         self.dbtype = dbtype
         if dbtype == 'sqlite3':
-            import os
             if db is None:
                 db = os.path.split(dbfile)[1]
             elif os.path.isdir(dbfile):
                 dbfile = os.path.join(dbfile,db)
             else:
                 pass # because dbfile better be a good file name
+                
         else:
             self.dbname = db
             if 'user' in kwcfg:
@@ -70,3 +73,28 @@ class DBConnection(DBConn):
         autumn_db = self
         
         
+
+class SQLITE3_Connection(object):
+    """
+    A container that will automatically create a database connection object
+    for each thread that accesses it.  Useful with SQLite, because the Python
+    modules for SQLite require a different connection object for each thread.
+    """
+    def __init__(self, db_filename, db_path=None):
+        self.b_debug = False
+        self.b_commit = True
+        self.db_name = os.path.join(db_path, db_filename)
+        self.container = threading_local()
+        
+    def __getattr__(self, name):
+        try:
+            if "conn" == name:
+                return self.container.conn
+                
+        except BaseException:
+            self.container.conn = DBConnector()
+            self.container.conn.getconnection('sqlite3', 
+                                              dbfile=self.db_name)
+            return self.container.conn
+            
+        raise AttributeError

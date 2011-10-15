@@ -4,7 +4,7 @@ class Database(object):
 
     def connect(self, dbtype, *args, **kwargs):
         if dbtype == 'sqlite3':
-            import sqlite3
+            import sqlite3.dbapi2 as sqlite3
             self.connection = sqlite3.connect(*args, **kwargs)
             self.lastrowid_ = "LAST_INSERT_ROWID()"
             
