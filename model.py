@@ -27,6 +27,7 @@ class ModelBase(type):
     
     '''
     def __new__(cls, name, bases, attrs):
+        
         if name == 'Model' or name == 'View':
             return super(ModelBase, cls).__new__(cls, name, bases, attrs)
 
@@ -37,6 +38,7 @@ class ModelBase(type):
 
         if not getattr(new_class.Meta, 'table', None):
             new_class.Meta.table = name.lower()
+        
         new_class.Meta.table_safe = escape(new_class.Meta.table)
         
         # Assume id is the default 
@@ -62,6 +64,7 @@ class ModelBase(type):
         if getattr(new_class.Meta, 'inner_join', None):
             #Allows simple, two table joins on a single key
             table_key = "t0"
+            
             new_class.Meta.table_safe = " AS ".join((escape(new_class.Meta.table),
                                                      table_key))
             new_class.t0 = (new_class.Meta.table, [f[0] for f in q.description])
