@@ -1,9 +1,9 @@
-from autumn.Ipy.query import Query
-from autumn.Ipy.model import cache
+from .query import Query
+from ..model import cache
 
 class Relation(object):
     
-    def __init__(self, model, field=None):
+    def __init__(self, model, field=None):            
         self.model = model
         self.field = field
     
@@ -18,10 +18,9 @@ class ForeignKey(Relation):
         if not instance:
             return self.model
         if not self.field:
-            self.field = '%s_id' % self.model.tablename()
-            
+            self.field = '%s_id' % self.model.Meta.table
         conditions = {self.model.Meta.pk: getattr(instance, self.field)}
-        return Query(model=self.model, **conditions)[0]
+        return Query(model=self.model, conditions=conditions)[0]
 
 class OneToMany(Relation):
     
@@ -30,16 +29,16 @@ class OneToMany(Relation):
         if not instance:
             return self.model
         if not self.field:
-            self.field = '%s_id' % instance.tablename()
+            self.field = '%s_id' % instance.Meta.table
         conditions = {self.field: getattr(instance, instance.Meta.pk)}
-        return Query(model=self.model, **conditions)
+        return Query(model=self.model, conditions=conditions)
     
 class JoinBy(Relation):
     '''
     Like ForiegnKey but drops requirement to join by primary key,
     and allows for expansion of join criteria.
     Should be used much less frequently than ForeignKey, since it
-    is probably not as efficient.
+    is probably not as efficient in general.
     '''
     def __init__(self, model, field=None, joinby=None, **kwargs):
         Relation.__init__(self, model, field)
@@ -51,14 +50,14 @@ class JoinBy(Relation):
         for k in kwargs:
             self.otherconditions.update({k: kwargs[k]})
             
-        
     def __get__(self, instance, owner):
         super(JoinBy, self)._set_up(instance, owner)
         if not instance:
             return self.model
         if not self.field:
-            self.field = '%s_id' % instance.tablename()
+            self.field = '%s_id' % instance.Meta.table
         conditions = {self.field: getattr(instance, self.joinby)}
         for qry in self.otherconditions:
             conditions.update({qry: getattr(instance, self.otherconditions[qry])})
-        return Query(model=self.model, **conditions)
+        return Query(model=self.model, conditions=conditions)
+
