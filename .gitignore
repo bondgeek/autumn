@@ -5,8 +5,12 @@ foo.txt
 *.pyc
 # ignore objects and archives
 *.[oa]
+*.os
+build/
 # ignore project director for espresso editor
 *.esproj
 # ignore project files for pydev and eclipse
 *.project
 *.pydevproject
+# ignore system files / Mac OS noise
+.DS_Store
