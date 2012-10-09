@@ -1,5 +1,7 @@
 # autumn.util.py
-
+import os
+import shutil
+import time
 
 from threading import local as threading_local
 
@@ -44,6 +46,36 @@ def create_table_if_needed(db, table_name, s_create_sql):
     if not table_exists(db, table_name):
         create_table(db, s_create_sql)
 
+def sqlite3_backup (db_filepath, backup_dir=None):
+    """
+    Create a backup of sqlite3 database specified by db_filepath
+    
+    """
+    if not os.path.isdir (backup_dir):
+        msg = "backup directory does not exist: {}".format(backup_dir)
+        raise Exception(msg)
+    
+    if not os.path.isfile(db_filepath):
+        msg = "database file does not exist: {}".format(db_filepath)
+        raise Exception(msg)
+    
+    backupname = os.path.basename(db_filepath) + time.strftime(".%Y%m%d-%H%M")
+    backupfile = os.path.join(backup_dir, backupname)
+    cnxn = sqlite3.connect (db_filepath)
+    
+    cur = cnxn.cursor ()
+    cur.execute ('begin immediate')
+
+    shutil.copyfile (db_filepath, backupfile)
+    
+    try:
+        cur.execute ('rollback')
+    except:
+        pass
+    
+    cnxn.close()
+    
+    return backupfile
 
 class AutoConn(object):
     """

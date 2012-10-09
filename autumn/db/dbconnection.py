@@ -79,6 +79,7 @@ class SQLITE3_Connection(object):
     A container that will automatically create a database connection object
     for each thread that accesses it.  Useful with SQLite, because the Python
     modules for SQLite require a different connection object for each thread.
+    
     """
     def __init__(self, db_filename, db_path=None):
         self.b_debug = False
