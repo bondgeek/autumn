@@ -1,13 +1,15 @@
 # autumn.util.py
 import os
 import shutil
+import glob
 import time
+
+import sqlite3
 
 from threading import local as threading_local
 
 # Autumn ORM
-from .model import Model
-from .db.relations import ForeignKey, OneToMany
+
 from .db.query import Query
 from .db.connection import Database
 
@@ -46,12 +48,31 @@ def create_table_if_needed(db, table_name, s_create_sql):
     if not table_exists(db, table_name):
         create_table(db, s_create_sql)
 
-def sqlite3_backup (db_filepath, backup_dir=None):
+
+def sqlite3_dbcopy(source_file, dest_file):
+    cnxn = sqlite3.connect (source_file)
+    
+    cur = cnxn.cursor ()
+    cur.execute('begin immediate' )
+
+    shutil.copyfile(source_file, dest_file)
+    
+    try:
+        cur.execute('rollback')
+    except:
+        pass
+    
+    cnxn.close()
+    
+    return dest_file
+    
+    
+def sqlite3_dbbackup (db_filepath, backup_dir):
     """
     Create a backup of sqlite3 database specified by db_filepath
     
     """
-    if not os.path.isdir (backup_dir):
+    if not os.path.isdir(backup_dir):
         msg = "backup directory does not exist: {}".format(backup_dir)
         raise Exception(msg)
     
@@ -61,21 +82,36 @@ def sqlite3_backup (db_filepath, backup_dir=None):
     
     backupname = os.path.basename(db_filepath) + time.strftime(".%Y%m%d-%H%M")
     backupfile = os.path.join(backup_dir, backupname)
-    cnxn = sqlite3.connect (db_filepath)
     
-    cur = cnxn.cursor ()
-    cur.execute ('begin immediate')
+    return sqlite3_dbcopy(db_filepath, backupfile)
+    
+def sqlite3_dbrestore(dbfile, backup_dir, restore_dir):
+    """
+    Restore a backup of sqlite3 database specified by dbfile 
+    from backup_dir to restore_dir.
+    
+    """
+    if not os.path.isdir(backup_dir):
+        msg = "backup directory does not exist: {}".format(backup_dir)
+        raise Exception(msg)
+    
+    if not os.path.isdir(restore_dir):
+        msg = "backup directory does not exist: {}".format(restore_dir)
+        raise Exception(msg)
+        
+    glob_file = ".".join((dbfile, "*"))
+        
+    glob_file = os.path.join(backup_dir, glob_file)
+    dest_file = os.path.join(restore_dir, dbfile)
+    
+    files = glob.glob(glob_file)
+    files.sort(reverse=True)
+    
+    assert files, "{} not found".format(glob_file)
+    backup_file = files[0]
+    
+    return sqlite3_dbcopy(backup_file, dest_file)
 
-    shutil.copyfile (db_filepath, backupfile)
-    
-    try:
-        cur.execute ('rollback')
-    except:
-        pass
-    
-    cnxn.close()
-    
-    return backupfile
 
 class AutoConn(object):
     """
