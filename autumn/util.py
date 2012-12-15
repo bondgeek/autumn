@@ -17,7 +17,24 @@ from .db.connection import Database
 """
 Convenience functions for the Autumn ORM.
 """
-
+def sqlite_execute(sqltext, dbname, fetch_all=False):
+    
+    if not os.path.isfile(dbname):
+        print("{}: file does not exist".format(dbname))
+        return None
+        
+    cnxn = sqlite3.connect(dbname)
+    cur = cnxn.cursor()
+    
+    cur.execute(sqltext)
+    
+    rc = cur.fetchall() if fetch_all else cur.description    
+        
+    cnxn.commit()
+    cnxn.close()
+    
+    return rc
+    
 def table_exists(db, table_name):
     """
     Given an Autumn model, check to see if its table exists.
